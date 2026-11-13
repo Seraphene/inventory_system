@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');
+const {totals,purchase,recordSale,funding}=require('./app/src/main/assets/ledger.js');
+const fresh=()=>({items:[],sales:[{amount:100000}],purchases:[],adjustments:[]});
+let d=fresh();purchase(d,'Rice',20,200000,12000,'split');
+assert.equal(totals(d).sales,100000);assert.equal(totals(d).capital,100000);assert.equal(totals(d).cash,0);
+d=fresh();purchase(d,'Rice',20,200000,12000,'outside');
+assert.equal(totals(d).capital,200000);assert.equal(totals(d).cash,100000);
+assert.throws(()=>funding(fresh(),200000,'cash'));
+recordSale(d,d.items[0].id,2);assert.equal(d.items[0].qty,18);assert.equal(totals(d).cash,124000);
+d.adjustments.push({amount:24000,reason:'Transport'});assert.equal(totals(d).cash,100000);
+const old=d.sales.at(-1).amount;d.items[0].price=15000;assert.equal(d.sales.at(-1).amount,old);
+assert.throws(()=>recordSale(d,d.items[0].id,19));
+console.log('PASS: split/external funding, insufficient cash, stock, sales history, deductions');
