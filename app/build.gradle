@@ -1,5 +1,9 @@
 plugins { id 'com.android.application' }
 
 android { namespace 'com.seraphene.inventory'; compileSdk 34
-    defaultConfig { applicationId 'com.seraphene.inventory'; minSdk 23; targetSdk 34; versionCode 1; versionName '0.1.0' }
+    defaultConfig { applicationId 'com.seraphene.inventory'; minSdk 23; targetSdk 34; versionCode 2; versionName '0.2.0' }
+    sourceSets { main { jniLibs.srcDirs = ['build/rust-jni'] } }
 }
+
+tasks.register('buildRust', Exec) { workingDir rootProject.projectDir; commandLine 'bash', 'build-native.sh' }
+tasks.named('preBuild').configure { dependsOn 'buildRust' }

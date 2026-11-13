@@ -1,6 +1,0 @@
-'use strict';
-function totals(d){const sum=(xs,k)=>xs.reduce((s,x)=>s+x[k],0);const sales=sum(d.sales,'amount'),purchases=sum(d.purchases,'amount'),capital=sum(d.purchases,'outside'),out=sum(d.adjustments,'amount');return {sales,purchases,capital,out,cash:sales+capital-purchases-out};}
-function funding(d,amount,mode){const cash=totals(d).cash;if(mode==='cash'&&amount>cash)throw Error('Not enough store cash. Choose an outside-money option.');const outside=mode==='outside'?amount:mode==='split'?Math.max(0,amount-cash):0;return {outside,store:amount-outside};}
-function purchase(d,name,qty,amount,price,mode){const f=funding(d,amount,mode);let i=d.items.find(x=>x.name.toLowerCase()===name.toLowerCase());if(i){i.qty+=qty;i.cost=Math.round(amount/qty);i.price=price;}else{ i={id:Date.now().toString()+Math.random().toString(16).slice(2),name,qty,cost:Math.round(amount/qty),price};d.items.push(i);}d.purchases.push({date:new Date().toISOString(),id:i.id,name,qty,amount,outside:f.outside,store:f.store});}
-function recordSale(d,id,qty){const i=d.items.find(x=>x.id===id);if(!i||qty>i.qty)throw Error('Not enough stock.');i.qty-=qty;d.sales.push({date:new Date().toISOString(),id,name:i.name,qty,price:i.price,amount:qty*i.price});}
-if(typeof module!=='undefined')module.exports={totals,funding,purchase,recordSale};
